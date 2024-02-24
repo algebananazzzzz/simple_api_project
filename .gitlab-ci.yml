@@ -1,0 +1,47 @@
+include:
+  - project: algebananazzzzz/gitlabtemplates
+    ref: main
+    file:
+      - Vars/aws-vars.yml
+      - Jobs/terraform-jobs.yml
+      - Jobs/golang-jobs.yml
+
+variables:
+  ENV:
+    value: "dev"
+    options:
+      - "dev"
+      - "prd"
+    description: "The target environment for deployment"
+  TF_WORKSPACE:
+    value: $ENV-webappdb
+  TF_DIR: $CI_PROJECT_DIR/infra
+  extends: .aws-vars:all
+
+stages:
+  - "build"
+  - "test"
+  - "deploy"
+
+go-build:
+  stage: build
+  variables:
+    SOURCE_DIR: $CI_PROJECT_DIR/src
+    OUTPUT_PATH: $CI_PROJECT_DIR/build/bootstrap
+  extends: 
+    - .golang:build
+
+terraform-plan:
+  stage: test
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    TF_VAR_FILE: config/$ENV.tfvars
+  extends:
+    - .terraform:plan
+
+terraform-apply:
+  stage: deploy
+  dependencies:
+    - terraform-plan
+  extends:
+    - .terraform:apply

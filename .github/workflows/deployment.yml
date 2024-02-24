@@ -1,0 +1,40 @@
+name: Deployment
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "^1.21.0"
+      - run: cd src
+      - run: GOOS=linux GOARCH=amd64 go build -tags lambda.norpc -o ../build/bootstrap .
+      - uses: actions/upload-artifact@master
+        with:
+          name: build-artifact
+          path: build/bootstrap
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@master
+        with:
+          name: build-artifact
+          path: build/bootstrap
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.4.2"
+      - run: cd infra/
+      - name: Terraform Init
+        id: init
+        run: terraform init -input=false
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=output.tfplan -input=false
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -input=false --auto-approve output.tfplan

@@ -24,6 +24,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/download-artifact@master
         with:
           name: build-artifact

@@ -9,13 +9,15 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "^1.21.0"
-      - working-directory: ./src
+      - working-directory: src
         run: GOOS=linux GOARCH=amd64 go build -tags lambda.norpc -o ../build/bootstrap .
       - uses: actions/upload-artifact@master
         with:
           name: build-artifact
           path: build/bootstrap
   deploy:
+    needs:
+      - build
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -36,13 +38,13 @@ jobs:
           terraform_version: "1.4.2"
       - name: Terraform Init
         id: init
-        working-directory: ./infra
+        working-directory: infra
         run: terraform init -input=false
       - name: Terraform Plan
         id: plan
-        working-directory: ./infra
+        working-directory: infra
         run: terraform plan --var-file=config/$ENV.tfvars -out=output.tfplan -input=false
       - name: Terraform Apply
         id: apply
-        working-directory: ./infra
+        working-directory: infra
         run: terraform apply -input=false --auto-approve output.tfplan

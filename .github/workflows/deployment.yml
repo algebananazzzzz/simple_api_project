@@ -3,6 +3,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      env:
+        description: The target environment for deployment
+        type: string
+        required: true
 
 jobs:
   build:
@@ -37,8 +43,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
-      - run: echo "ENV=dev" >> $GITHUB_ENV
-      - run: echo "TF_WORKSPACE=$ENV-webappdb" >> $GITHUB_ENV
+      - run: echo "ENV=${{ inputs.env > '' && inputs.env || 'dev' }}" >> $GITHUB_ENV
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.4.2"
@@ -46,6 +51,13 @@ jobs:
         id: init
         working-directory: infra
         run: terraform init -input=false
+      - name: Terraform Workspace
+        working-directory: infra
+        run: terraform workspace select -or-create $ENV-webappdb
+      - working-directory: infra
+        run: |
+          ls
+          ls build
       - name: Terraform Plan
         id: plan
         working-directory: infra

@@ -27,7 +27,7 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: build-artifact
-          path: build/bootstrap
+          path: build
           compression-level: 0
   deploy:
     needs:
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/download-artifact@master
         with:
           name: build-artifact
-          path: build/bootstrap
+          path: build
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}

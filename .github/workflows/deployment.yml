@@ -57,7 +57,7 @@ jobs:
         run: terraform workspace select -or-create $ENV-webappdb
       - run: |
           ls
-          ls build
+          ls -aln build
       - name: Terraform Plan
         id: plan
         working-directory: infra
@@ -68,4 +68,4 @@ jobs:
         run: terraform apply -input=false --auto-approve output.tfplan
       - run: |
           ls
-          ls upload
+          ls -aln deploy

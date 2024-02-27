@@ -1,6 +1,6 @@
 locals {
-  execution_role_name = "${var.env}-mgmt-iamrole-${var.project_name}"
-  function_name       = "${var.env}-app-func-${var.project_name}"
+  execution_role_name = "${var.env}-mgmt-iamrole-${var.project_code}"
+  function_name       = "${var.env}-app-func-${var.project_code}"
 }
 
 
@@ -24,5 +24,5 @@ module "lambda_function" {
 data "archive_file" "deployment_package" {
   type        = "zip"
   source_dir  = "${path.module}/${var.deployment_package_location}"
-  output_path = "${path.module}/../deploy/${var.project_name}.zip"
+  output_path = "${path.module}/../deploy/${var.project_code}.zip"
 }

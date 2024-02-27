@@ -3,7 +3,7 @@ variable "aws_region" {
   default     = "ap-southeast-1"
 }
 
-variable "project_name" {
+variable "project_code" {
   description = "The code name of the project used for naming convention."
 }
 

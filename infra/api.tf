@@ -1,5 +1,5 @@
 locals {
-  api_gateway_name = "${var.env}-web-apigw-${var.project_name}"
+  api_gateway_name = "${var.env}-web-apigw-${var.project_code}"
 }
 
 module "api" {

@@ -7,6 +7,9 @@ locals {
 module "function_execution_role" {
   source = "./modules/iam_role"
   name   = local.execution_role_name
+  policy_attachments = [
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  ]
 }
 
 module "lambda_function" {

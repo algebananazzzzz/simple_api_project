@@ -20,10 +20,7 @@ jobs:
           go-version: "^1.21.0"
           cache-dependency-path: "**/go.sum"
       - working-directory: src
-        run: GOOS=linux GOARCH=amd64 go build -tags lambda.norpc -o ../build/bootstrap .
-      - run: |
-          ls
-          ls -aln build
+        run: GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -tags lambda.norpc -o ../build/bootstrap .
       - uses: actions/upload-artifact@master
         with:
           name: build-artifact
@@ -59,9 +56,6 @@ jobs:
       - name: Terraform Workspace
         working-directory: infra
         run: terraform workspace select -or-create $ENV-webappdb
-      - run: |
-          ls
-          ls -aln build
       - name: Terraform Plan
         id: plan
         working-directory: infra
@@ -70,6 +64,3 @@ jobs:
         id: apply
         working-directory: infra
         run: terraform apply -input=false --auto-approve output.tfplan
-      - run: |
-          ls
-          ls -aln deploy

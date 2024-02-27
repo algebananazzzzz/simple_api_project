@@ -21,6 +21,9 @@ jobs:
           cache-dependency-path: "**/go.sum"
       - working-directory: src
         run: GOOS=linux GOARCH=amd64 go build -tags lambda.norpc -o ../build/bootstrap .
+      - run: |
+          ls
+          ls -aln build
       - uses: actions/upload-artifact@master
         with:
           name: build-artifact
